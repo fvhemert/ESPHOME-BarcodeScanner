@@ -14,11 +14,11 @@ The first iteration of this project will support the following scenario:
 
 The shopping list synchronizes with MEALIE, a locally installed recipe manager and meal planner.
 
-**Highlevel overview**
+**Highlevel overview**<br>
 The illustration below depicts the highlevel implementation of the Barcode Scanner implmentation
 ![image](https://github.com/user-attachments/assets/8a0614ef-5037-4cc1-a282-e38d920bc123)
 
-# Components:
+# Components
 
 **_GM67 Barcode scanner module_**<br>
 <img src="https://github.com/user-attachments/assets/bf544f15-44c3-4601-a529-7d63a8ee7e7b" width=10% height=10%><br>
@@ -57,6 +57,14 @@ To enable this functionality, the Home Assistant mobile client is installed on t
 **_Touchscreen_**<br>
 The shopping list and product update page is also available on the various touchscreens in the house. These toucscreens have the FullyKiosk browser installed, allowing them to switch to the shoppinglist dashboard pages when new articles are scanned.
 
+**_Meanwell powersupply RS-15-5, 15W 5V_**<br>
+<img src="https://github.com/user-attachments/assets/a98e8c54-98c4-4d25-914c-431735db9a35" width=10% height=10%><br>
+The thermal printer requires a stable 5V power supply rated at 3A, testing with various external 3A adapters showed that they are not supplying enough power to operate the printer. This is why a Meanwell powersupply is used.
+
+**_3D printed enclosure_**<br>
+Two enclosurea designed in Fusion360 to accomodate the Barcode scanner.
+The first enclosure uses the GM60 scanner, the OLED display and an external powersupply, the second enclosure is build around the GM67 scanner module and also includes a thermal printer and powersupply.
+
 **_Home Assistant_**<br>
 Home Assistant is the core orchestrator of the Shoppinglist automation, it uses the following (custom) integrations:
 
@@ -71,13 +79,10 @@ Home Assistant is the core orchestrator of the Shoppinglist automation, it uses 
 A self-hosted recipe manager and meal planner with a RestAPI backend and a reactive frontend application built in Vue for a pleasant user experience for the whole family. 
 For more information refer to: https://docs.mealie.io/
 
-**_3D printed enclosuer_**<br>
-Two enclosure designed in Fusion360 to accomodate the Barcode scanner and thermal printer
 
 
 
-
-**ToDo**
+# ToDo<br>
 - Establish 2-way communication with the printer to enable "paper out" messages.
 - Implement an easy way to clear the shopping list
 - Extend the functionality with an inventory system that keeps track of product stock
