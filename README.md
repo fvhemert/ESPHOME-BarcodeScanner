@@ -1,7 +1,18 @@
 # ESPHOME-BarcodeScanner
 
 **Introduction**<br>
-XXXXX
+Triggered by the youtube videos from _Matt Fryer_ and _SmartHome Yourself_ I decided to start looking into creating an automated shoppinglist in Home Assistant.
+The initial setup as described here is intended to learn, further define the requirements and most important, see if it brings value to our every day life.
+
+The first iteration of this project will support the following scenario:
+- Before a consumed product is discarded, its barcode is scanned on by a scanner that is located on the kitchen counter
+- After scanning the barcode an attempt is made to automatically resolve the code to a product name
+- If the product name is successfully resolved, the product is automatically added to the shopping list
+- If the product name cannot be resolved, the user will receive a notification on his/her mobile phone, the notification inlcudes a button that opens up a webpage to manually add the product information.
+- The manually updated product information will be stored for future use and the product will be added to the shopping list.
+- If it is time to go to the store, pushing a button on top of the scanner will trigger the printout of a nicely formatted shoppinglist containg all previously added products.
+
+The shopping list synchronizes with MEALIE, a locally installed recipe manager and meal planner.
 
 **Highlevel overview**
 The illustration below depicts the highlevel implementation of the Barcode Scanner implmentation
@@ -62,6 +73,8 @@ For more information refer to: https://docs.mealie.io/
 
 **ToDo**
 - Establish 2-way communication with the printer to enable "paper out" messages.
+- Implement an easy way to clear the shopping list
+- Extend the functionality with an inventory system that keeps track of product stock
 
 **Credits**<br>
 Matt Fryer - https://github.com/MattFryer/HA-Mealie-Barcode-Scanner<br>
