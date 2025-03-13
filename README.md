@@ -47,14 +47,22 @@ To enable this functionality, the Home Assistant mobile client is installed on t
 The shopping list and product update page is also available on the various touchscreens in the house. These toucscreens have the FullyKiosk browser installed, allowing them to switch to the shoppinglist dashboard pages when new articles are scanned.
 
 **_Home Assistant_**<br>
+Home Assistant is the core orchestrator of the Shoppinglist automation, it uses the following (custom) integrations:
+
+1. ESPHOME - to create a YAML configuration file and install directly onto the ESP8266. https://esphome.io/
+2. ALEXA MEDIA PLAYER - to create Text to Speech notifications. https://github.com/alandtse/alexa_media_player/wiki 
+3. FULLY KIOSK BROWSER - Show shoppinglist dashboards on wall mounted tablets. https://www.home-assistant.io/integrations/fully_kiosk
+4. MEALIE - SHopping list integration. https://www.home-assistant.io/integrations/mealie
+5. PYSCRIPT - integration to use Python functions and scripts in homeassistant https://github.com/custom-components/pyscript
+6. SHOPPING LIST - keep track of shopping list items in Home Assistant https://www.home-assistant.io/integrations/shopping_list
 
 **_Mealie_**<br>
-
-
+A self-hosted recipe manager and meal planner with a RestAPI backend and a reactive frontend application built in Vue for a pleasant user experience for the whole family. 
+For more information refer to: https://docs.mealie.io/
 
 **ToDo**
 - Establish 2-way communication with the printer to enable "paper out" messages.
 
 **Credits**<br>
 Matt Fryer - https://github.com/MattFryer/HA-Mealie-Barcode-Scanner<br>
-https://github.com/SmartHome-yourself/barcode-scanner-for-esphome<br>
+Smarthome yourself  - https://github.com/SmartHome-yourself/barcode-scanner-for-esphome<br>
