@@ -80,7 +80,19 @@ A self-hosted recipe manager and meal planner with a RestAPI backend and a react
 For more information refer to: https://docs.mealie.io/
 
 
+# High level installation steps<br>
+1. **Python scripts:** the scripts provided by Matt Fryer are installed "as-is" following the guidance provided on his GitHub page. A copy of the Python scripts can be found in the **pyscript** folder in this repository. Make sure to also install the Python custom integration in Home Assistant.
+2. **ESP8266:** the **esphome** folder in this repository contains the modified/updated yaml file that was originally created by Matt Fryer. Install it using the ESPHOME plaform.
+3. **Home Assistant:** use the yaml code provided in the **ha_automation** folder to build your HA automations. Update the entity names to match your installation.
+4. **Mealie:** Install Mealie on a dedicated server (eg. RaspberryPI) or DOcker container as described on the Mealie website. Once the Mealie application is running, install the Home Assistant Mealie integration.
 
+
+# Repository content<br>
+- **ESPHome**  Updated yaml file for the ESP8266 device. (SCANNER-01 uses the GM60 scanner, SCANNER-02 supports the GM67 scanner and thermal printer)<br>
+- **ha_automation** sample automations to use as a starting point for building the shopping list automation<br>
+- **hardware doumentation** product information and manuals for the various components that were used.<br>
+- **pyscript** a 1:1 copy of the pyscripts created by Matt Fryer<br>
+- **input-sources** misc information used during the build<br>
 
 # ToDo<br>
 - Establish 2-way communication with the printer to enable "paper out" messages.
@@ -92,4 +104,4 @@ The solution above was built using components and code from both:<br>
 Matt Fryer - https://github.com/MattFryer/HA-Mealie-Barcode-Scanner<br>
 Smarthome yourself  - https://github.com/SmartHome-yourself/barcode-scanner-for-esphome<br>
 
-Their excellent videos and guidance was a great inspiration and helped me along the way
+Their excellent videos and guidance were a great inspiration and helped me along the way
