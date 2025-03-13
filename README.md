@@ -71,11 +71,20 @@ Home Assistant is the core orchestrator of the Shoppinglist automation, it uses 
 A self-hosted recipe manager and meal planner with a RestAPI backend and a reactive frontend application built in Vue for a pleasant user experience for the whole family. 
 For more information refer to: https://docs.mealie.io/
 
+**_3D printed enclosuer_**<br>
+Two enclosure designed in Fusion360 to accomodate the Barcode scanner and thermal printer
+
+
+
+
 **ToDo**
 - Establish 2-way communication with the printer to enable "paper out" messages.
 - Implement an easy way to clear the shopping list
 - Extend the functionality with an inventory system that keeps track of product stock
 
-**Credits**<br>
+# Credits<br>
+The solution above was built using components and code from both:<br>
 Matt Fryer - https://github.com/MattFryer/HA-Mealie-Barcode-Scanner<br>
 Smarthome yourself  - https://github.com/SmartHome-yourself/barcode-scanner-for-esphome<br>
+
+Their excellent videos and guidance was a great inspiration and helped me along the way
