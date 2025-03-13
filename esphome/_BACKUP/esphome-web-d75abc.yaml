@@ -139,7 +139,7 @@ display:
   - platform: ssd1306_i2c
     model: "SSD1306 128x64"
     address: "${ssd1306_i2c_address}"
-    update_interval: 75ms #Updated from 100ms
+    update_interval: 100ms
     rotation: 180
     lambda: |-
       if(id(screen_mode).state == "connecting") {
@@ -196,7 +196,7 @@ globals:          #Code suggestion from  https://community.home-assistant.io/t/s
 
 # Advance text 
 interval:
-  - interval: 30ms #Updated from 30ms
+  - interval: 30ms
     then:
       - lambda: |-
           if (id(scroll_x) < -(id(scroll_length))) {
@@ -273,7 +273,7 @@ uart:
                   id(screen_mode).publish_state("scanned");
               # Send a HA event with the scanned product barcode
               - homeassistant.event:
-                  event: esphome.barcode01_scan
+                  event: esphome.barcode_scan
                   data_template: 
                     barcode: "{{ scanned_barcode }}"
                   variables:
@@ -309,7 +309,7 @@ uart:
                   id(screen_mode).publish_state("scanned");                   
               # Send a HA event with the scanned product barcode
               - homeassistant.event:
-                  event: esphome.generic_barcode01_scan
+                  event: esphome.generic_barcode_scan
                   data_template: 
                     product: "{{ scanned_product }}"
                   variables:

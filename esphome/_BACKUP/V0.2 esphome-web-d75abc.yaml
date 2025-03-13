@@ -35,15 +35,11 @@ esphome:
     name: scanner.vanhemert
     version: "0.1"
   on_boot:
-    - text_sensor.template.publish: # On boot set the status to connecting
-        id: screen_mode
-        state: "connecting"
+    then:
+      - lambda: id(last_barcode).publish_state("Scan Barcode");
 
 esp8266:
   board: esp01_1m
-
-# Enable logging
-logger:
 
 # Enable Home Assistant API
 api:
@@ -55,30 +51,12 @@ api:
       variables:
         product: string
       then:
-        - text_sensor.template.publish: # Set the mode to result
-            id: screen_mode
-            state: "result"
-        - text_sensor.template.publish: # Set the last result to the returned value
-            id: last_result
-            state: !lambda 'return product.c_str();'     
-        - script.execute: standby_timer # Start the timer to return to standby
         - logger.log: 
             level: INFO
             format: "Returned Product: %s"
             args: [ 'product.c_str()' ] 
         - lambda: |
             id(product_title) = product.c_str();
-
-  on_client_connected: # On successful connection to HA then set the status to standby
-    - text_sensor.template.publish:
-        id: screen_mode
-        state: "standby"
-    - script.stop: standby_timer # Stop the timer in case its running
-  on_client_disconnected: # If the connection to HA is lost then set the status to connecting
-    - text_sensor.template.publish: 
-        id: screen_mode
-        state: "connecting"
-    - script.stop: standby_timer # Stop the timer in case its running
 
 # Allow Over-The-Air updates
 ota:
@@ -92,11 +70,31 @@ improv_serial:
 
 captive_portal:
 
-#######################################################################################################    
-# CONFIG THE DEVICE
-#######################################################################################################
+# Enable logging
+logger:
+  hardware_uart: UART0
 
-# I2C bus for OLED display
+
+# OLED DISPLAY
+font:
+  - file: "_fonts/arial.ttf"
+    id: arial_font_16
+    size: 16
+    glyphs:  >-
+      ß!?"%()+*=,-_.:°ø0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZÄÜÖ abcdefghijklmnopqrstuvwxyzäüöïéè€@<>/
+
+  - file: "_fonts/arial.ttf"
+    id: arial_font_18
+    size: 18
+    glyphs:  >-
+      ß!?"%()+*=,-_.:°ø0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZÄÜÖ abcdefghijklmnopqrstuvwxyzäüöïéè€@<>/
+
+  - file: "_fonts/arial.ttf"
+    id: arial_font
+    size: 30
+    glyphs:  >-
+      ß!?"%()+*=,-_.:°ø0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZÄÜÖ abcdefghijklmnopqrstuvwxyzäüöïéè€@<>/
+    
 i2c:
   sda: "${display_i2c_sda}"
   scl: "${display_i2c_scl}"
@@ -104,82 +102,9 @@ i2c:
   frequency: 400kHz
   id: i2c_bus
 
-# Font used by OLED display
-font:
-  - file: "_fonts/arial.ttf"
-    id: arial_font_18
-    size: 18
-    glyphs:  >-
-      ß!?"%()+*=,-_.:°ø0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZÄÜÖ abcdefghijklmnopqrstuvwxyzäüöïéè€@<>/
-  - file: "_fonts/arial.ttf"
-    id: arial_font_24
-    size: 24
-    glyphs:  >-
-      ß!?"%()+*=,-_.:°ø0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZÄÜÖ abcdefghijklmnopqrstuvwxyzäüöïéè€@<>/
-  - file: "_fonts/arial.ttf"
-    id: arial_font
-    size: 30
-    glyphs:  >-
-      ß!?"%()+*=,-_.:°ø0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZÄÜÖ abcdefghijklmnopqrstuvwxyzäüöïéè€@<>/
-
-  # Material Design Icons  https://fonts.google.com/icons?selected=Material+Symbols+Outlined:search:FILL@0;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%235f6368
-  - file: "gfonts://Material+Symbols+Outlined"
-    id: icons_32
-    size: 32
-    glyphs: [
-      "\U0000e70b", # mdi:barcode
-      "\U0000e70c", # mdi:barcode-scanner
-      "\U0000f85c", # mdi:barcode-reader
-      "\U0000e63e", # mdi:wifi
-      "\U0000e8b6"  # mdi:search
-      ] 
-
-# OLED DISPLAY
-display:
-  - platform: ssd1306_i2c
-    model: "SSD1306 128x64"
-    address: "${ssd1306_i2c_address}"
-    update_interval: 75ms #Updated from 100ms
-    rotation: 180
-    lambda: |-
-      if(id(screen_mode).state == "connecting") {
-        it.print(0, 0, id(icons_32), "\U0000e63e");
-        std::string printout="Connecting to Home Assistant";
-        int clength = printout.length();
-        id(scroll_length) = clength * 15;
-        // multiplication factor (in this case 10) to be determined with trial and error based on your font width
-        it.print(id(scroll_x), 30, id(arial_font_24), printout.c_str());
-      } 
-      else if(id(screen_mode).state == "standby") {
-        it.print(0, 0, id(icons_32), "\U0000f85c");
-        it.print(40, 5, id(arial_font_24), "Gereed");
-
-        std::string printout="Scan een product";
-        int clength = printout.length();
-        id(scroll_length) = clength * 15;
-        // multiplication factor (in this case 10) to be determined with trial and error based on your font width
-        it.print(id(scroll_x), 30, id(arial_font_24), printout.c_str());
-
-      } 
-      else if(id(screen_mode).state == "scanned") {
-        it.print(0, 0, id(icons_32), "\U0000e8b6");
-        it.print(0, 30, id( arial_font_24), "Zoeken");
-
-      } 
-      else if(id(screen_mode).state == "result") {
-        std::string printout=id(last_result).state.c_str();
-        int clength = printout.length();
-        id(scroll_length) = clength * 15;
-        it.print(id(scroll_x), 5, id(arial_font_18), id(last_barcode).state.c_str());
-        // multiplication factor (in this case 10) to be determined with trial and error based on your font width
-        it.print(id(scroll_x), 30, id(arial_font_24), printout.c_str());
-      }
-       else {
-        it.print(0, 4, id(arial_font_18), "Unknown Error");
-      }     
-
 # Display SCROLLING
-globals:          #Code suggestion from  https://community.home-assistant.io/t/scrolling-text-on-ssd1306-oled-screen/305433/11
+# Code suggestion from  https://community.home-assistant.io/t/scrolling-text-on-ssd1306-oled-screen/305433/11
+globals:
    - id: scroll_x
      type: int
      restore_value: no
@@ -194,9 +119,8 @@ globals:          #Code suggestion from  https://community.home-assistant.io/t/s
      max_restore_data_length: 24
      initial_value: '"Klaar om te scannen"'
 
-# Advance text 
 interval:
-  - interval: 30ms #Updated from 30ms
+  - interval: 30ms
     then:
       - lambda: |-
           if (id(scroll_x) < -(id(scroll_length))) {
@@ -206,40 +130,29 @@ interval:
           else  {
             id(scroll_x) -= 2;            
           }
- 
-# Scripts
-script:
-  # 30 second timer used to reset the screen back to standby
-  - id: standby_timer 
-    mode: restart
-    then:
-      - delay: 30s
-      - text_sensor.template.publish:
-          id: screen_mode
-          state: "standby"
+# END SCROLLING
 
-# Text Sensor
-text_sensor:
-    # Current status of the device. Used for what to show on the screen and not exposed to HA
-  - platform: template
-    id: screen_mode
-    name: Screen Mode
-    internal: true
-  # # Provided for diagnostic purposes only. You should use the HA event "esphome.barcode_scan" triggered when a scan is performed
-  - platform: template
-    id: last_barcode
-    name: Last Barcode
-    icon: mdi:barcode
-    entity_category: DIAGNOSTIC
-    disabled_by_default: true
-  # Contains the last product passed back from HA. Used to display the result on the screen. Not exposed back to HA.
-  - platform: template
-    id: last_result
-    name: Last Result
-    internal: true
-
-# UART for the GM67 barcode scanner
+#Display definition
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    address: "${ssd1306_i2c_address}"
+#    update_interval: 250ms
+    update_interval: 100ms
+    rotation: 180
+    lambda: |-
+      std::string printout=id(product_title).c_str();
+      int clength = printout.length();
+      id(scroll_length) = clength * 15;
+      it.print(id(scroll_x), 5, id(arial_font_18), id(last_barcode).state.c_str());
+      // multiplication factor (in this case 10) to be determined with trial and error based on your font width
+      it.print(id(scroll_x), 25, id(arial_font), printout.c_str());
+      
+      
+      
+# SCANNER
 uart:
+  # UART for the GM67 barcode scanner
   - id: scanner
     baud_rate: 9600
     tx_pin: ${uart_tx_pin}
@@ -270,10 +183,9 @@ uart:
                   std::string str(bytes.begin(), bytes.end());
                   id(last_barcode).publish_state(str.c_str()); 
                   id(last_scan).trigger("barcode_scanned"); 
-                  id(screen_mode).publish_state("scanned");
               # Send a HA event with the scanned product barcode
               - homeassistant.event:
-                  event: esphome.barcode01_scan
+                  event: esphome.barcode_scan
                   data_template: 
                     barcode: "{{ scanned_barcode }}"
                   variables:
@@ -284,12 +196,6 @@ uart:
               - switch.turn_on: beeper
               - delay: 50ms
               - switch.turn_off: beeper
-                           # Set the status to scanned
-              - text_sensor.template.publish: 
-                  id: screen_mode
-                  state: "scanned"
-              # Start the timer to return to standby just in case nothing comes back from HA
-              - script.execute: standby_timer 
         - if: # If a special QR code was scanned which contains text starting "GENERIC:"
             condition:
               lambda: |-
@@ -306,10 +212,9 @@ uart:
                   std::string str(bytes.begin(), bytes.end());
                   id(last_barcode).publish_state(str.substr(8).c_str()); // Get rid of the "GENERIC:" from the front
                   id(last_scan).trigger("barcode_scanned"); 
-                  id(screen_mode).publish_state("scanned");                   
               # Send a HA event with the scanned product barcode
               - homeassistant.event:
-                  event: esphome.generic_barcode01_scan
+                  event: esphome.generic_barcode_scan
                   data_template: 
                     product: "{{ scanned_product }}"
                   variables:
@@ -320,26 +225,17 @@ uart:
               - switch.turn_on: beeper
               - delay: 50ms
               - switch.turn_off: beeper
-              # Set the status to scanned
-              - text_sensor.template.publish: 
-                  id: screen_mode
-                  state: "scanned"
-              # Start the timer to return to standby just in case nothing comes back from HA
-              - script.execute: standby_timer               
 
-# Event
-event:
-  # Provided for diagnostic purposes only. You should use the HA event "esphome.barcode_scan" triggered when a scan is performed
+# Text Sensor
+text_sensor:
+  # # Provided for diagnostic purposes only. You should use the HA event "esphome.barcode_scan" triggered when a scan is performed
   - platform: template
-    name: "Last Scan"
-    id: "last_scan"
-    icon: mdi:barcode-scan
+    id: last_barcode
+    name: Last Barcode
+    icon: mdi:barcode
     entity_category: DIAGNOSTIC
     disabled_by_default: true
-    event_types:
-      - "barcode_scanned"
 
-# Buzzer output
 switch:
   - platform: gpio
     name: "Buzzer"
@@ -377,3 +273,17 @@ light:
   - platform: binary
     name: "Left LED "
     output: led_left
+  
+
+# Event
+event:
+  # Provided for diagnostic purposes only. You should use the HA event "esphome.barcode_scan" triggered when a scan is performed
+  - platform: template
+    name: "Last Scan"
+    id: "last_scan"
+    icon: mdi:barcode-scan
+    entity_category: DIAGNOSTIC
+    disabled_by_default: true
+    event_types:
+      - "barcode_scanned"
+  
