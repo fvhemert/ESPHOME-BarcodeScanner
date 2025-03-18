@@ -6,17 +6,18 @@ Inspired by the youtube videos from _Matt Fryer_ and _SmartHome Yourself_ I deci
 The initial setup as described here is intended to learn, further define the requirements and most important, see if it brings value to our every day life.
 
 The first iteration of this project will support the following scenario:
-- Before a consumed product is discarded, its barcode is scanned on by a scanner that is located on the kitchen counter
+- Before a consumed product is discarded, its barcode is scanned by a barcode scanner that is located on the kitchen counter
 - After scanning the barcode, an attempt is made to automatically resolve the code to a product name
-- If the product name is successfully resolved, the product is automatically added to the shopping list and the product information is locally cached
+- If the product name is successfully resolved, the product is automatically added to the Home Assistant shopping list and the product information is locally cached
 - If the product name cannot be resolved, the user will receive a notification on his/her mobile phone, this notification will include a button that opens up a webpage to manually add the product information.
 - The manually updated product information will be stored in the local cache for future use and the product will be added to the shopping list.
 - If the product is already on the shopping list, it will not be added a second time.
-- If it is time to go to the store, pushing a button on top of the scanner will trigger the printout of a nicely formatted shoppinglist containg all previously added products.
+- If it is time to go to the store, pushing a button on top of the scanner will trigger the printout of a formatted shoppinglist with all previously added products.
+- Returning from the store, there are two option to clear the shopping list: 1) a button on the dashboard that clears the entire list  at once 2) a separte dashboard that allows to remove individual items one by one.
 - All important interaction with the barcode scanner will be confirmed by using TTS and the kitchen SONOS mediaplayer.
 
 **Note:**<br>
-The orginal project leveraged the MEALIE integration to synchronize with MEALIE, a locally installed recipe manager and meal planner, I have decided to abandon this additional integration and only use the native Home Assistant Shopping list integration (https://www.home-assistant.io/integrations/shopping_list/)
+The orginal project leveraged the MEALIE integration to synchronize with MEALIE, a locally installed recipe manager and meal planner. I have decided to abandon this additional integration and only use the native Home Assistant Shopping list integration.
 In case of scanning a product that is already on the shopping list, the MEALIE integration will modify the shopping list entry by adding a number prefix or increasing the allready existing one. This functionality will no longer be availble and has been replaced by logic that will eliminate adding duplicate entries, this logic at this time does not include the number prefix.
 
 **Highlevel overview**<br>
@@ -28,8 +29,8 @@ The illustration below depicts the highlevel implementation of the Barcode Scann
 **_GM67 Barcode scanner module_**<br>
 <img src="https://github.com/user-attachments/assets/bf544f15-44c3-4601-a529-7d63a8ee7e7b" width=10% height=10%><br>
 Barcode scanner module that supports a wide variety of barcode types and can be connceted to an ESP device through a TTL serial connection.
-The device can be aquired through Amazon or Aliexpress, proct information can be found at http://www.growbarcode.com/productinfo/888736.html 
-Note: I have also used the GROW GM60 stainless steel scanner module and found the module to be less reliable in low light conditions. This module does have a collimation light and also does not come with a helper (white) led.
+The device can be aquired through Amazon or Aliexpress, proct information can be found at http://www.growbarcode.com/productinfo/888736.html <br>
+*Note:* I have also experimented with the GROW GM60 stainless steel scanner module and found the module to be less reliable in low light conditions. This module does not have a collimation light and also does not come with a helper (white) led. 
 
 **_Thermal printer_**<br>
 <img src="https://github.com/user-attachments/assets/f2c6cd00-05cf-4cc0-b8a0-5b0033673be7" width=10% height=10%><br>
@@ -50,10 +51,6 @@ Simple push button switch that inludes a led. The switches are used to manually 
 <img src="https://github.com/user-attachments/assets/ce8d8eb2-6eae-4f33-b7c5-548f9fe575a6" width=10% height=10%><br>
 The core processor for the barcode scanner, managed from ESPHOME in Home Assistant.
 The Lolin NodeMCY V3 board is configured to connect over serial to the barcode scanner and thermal printer, I2C to the display and 4 GPIO pins are used to read the status of the push button switches and control the LED's.
-
-**_Voice Assistant_**<br>
-<img src="https://github.com/user-attachments/assets/a7a821b9-712e-4503-9b37-a9483f083062" width=7% height=7%><br>
-Amazon Alexa together with the Home Assistant integration and Text to Speech engine is used to provide speech feedback everytime a product is scanned. It will speak out the name of the product that was scanned or if a product is not recognized, urge the user to manually add the product details.
 
 **_Mobile Phone_**<br>
 If the barcode of a scanned item cannot be resolved to a product name, a notificiation is sent to the mobile phone of the user. This actionable notification includes a button that, when clicked, will open a dedicated dashboard page that allows the user to type in the missing information.
@@ -81,8 +78,8 @@ Home Assistant is the core orchestrator of the Shoppinglist automation, it uses 
 
 # High level installation steps<br>
 1. **Python scripts:** the scripts provided by Matt Fryer are installed "as-is" following the guidance provided on his GitHub page. A copy of the Python scripts can be found in the **pyscript** folder in this repository. Make sure to also install the Python custom integration in Home Assistant.
-2. **ESP8266:** the **esphome** folder in this repository contains the modified/updated yaml file that was originally created by Matt Fryer. Install it using the ESPHOME plaform.
-3. **Home Assistant:** use the yaml code provided in the **ha_automation** folder to build your HA automations. Update the entity names to match your installation.
+2. **ESP8266:** the **esphome** folder in this repository contains the modified/updated yaml file that was originally created by Matt Fryer. Install it to the ESP device using the ESPHOME plaform.
+3. **Home Assistant:** use the yaml code provided in the **ha_automation** and **ha_dashboards** folders to build your HA automations. Update the entity names to match your installation.
 
 # Repository content<br>
 - **ESPHome**  Updated yaml file for the ESP8266 device. (SCANNER-01 uses the GM60 scanner, SCANNER-02 supports the GM67 scanner and thermal printer)<br>
