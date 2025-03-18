@@ -2,7 +2,7 @@
 <img src="https://github.com/user-attachments/assets/7599e981-eb70-4ef0-9e64-8ed92874b929" width=50% height=50%><br>
 
 **Introduction**<br>
-Triggered by the youtube videos from _Matt Fryer_ and _SmartHome Yourself_ I decided to start looking into creating an automated shoppinglist in Home Assistant.
+Inspired by the youtube videos from _Matt Fryer_ and _SmartHome Yourself_ I decided to start looking into creating an automated shoppinglist in Home Assistant.
 The initial setup as described here is intended to learn, further define the requirements and most important, see if it brings value to our every day life.
 
 The first iteration of this project will support the following scenario:
