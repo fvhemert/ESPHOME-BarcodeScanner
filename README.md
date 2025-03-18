@@ -77,17 +77,37 @@ Home Assistant is the core orchestrator of the Shoppinglist automation, it uses 
 5. SHOPPING LIST - keep track of shopping list items in Home Assistant https://www.home-assistant.io/integrations/shopping_list
 
 # High level installation steps<br>
-1. **Python scripts:** the scripts provided by Matt Fryer are installed "as-is" following the guidance provided on his GitHub page. A copy of the Python scripts can be found in the **pyscript** folder in this repository. Make sure to also install the Python custom integration in Home Assistant.
+1. **Python scripts:** the scripts provided by Matt Fryer are installed "as-is" following the guidance provided on his GitHub page. A copy of the Python scripts can be found in the **pyscript** folder in this repository. Make sure to also install the Python custom integration in Home Assistant. Refer to the excellent instructions on Matt's github page for the installation, replace/update the files from this repository where needed.
 2. **ESP8266:** the **esphome** folder in this repository contains the modified/updated yaml file that was originally created by Matt Fryer. Install it to the ESP device using the ESPHOME plaform.
 3. **Home Assistant:** use the yaml code provided in the **ha_automation** and **ha_dashboards** folders to build your HA automations. Update the entity names to match your installation.
 
 # Repository content<br>
-- **ESPHome**  Updated yaml file for the ESP8266 device. (SCANNER-01 uses the GM60 scanner, SCANNER-02 supports the GM67 scanner and thermal printer)<br>
-- **ha_automation** sample automations to use as a starting point for building the shopping list automation<br>
-- **hardware doumentation** product information and manuals for the various components that were used.<br>
-- **pyscript** a 1:1 copy of the pyscripts created by Matt Fryer<br>
+- **Config**<br>
+    configuration.yaml --> Changes to the configuration.yaml to enable pyscript / sensor definition<br>
+- **ESPHome - GM60**<br>
+    esphome-web-d75abc.yaml --> ESPHOME code for the GM60 based scanner, includes display<br>
+- **ESPHome - GM67**<br>
+    scanner-01.yaml --> ESPHOME code for the GM67 based scanner, includes printer and display<br>
+- **Fusion 360**<br>
+    Design files for both the GM60 en GM67 enclosure<br>
+- **ha_automation - HA Shopping list** sample automations to use as a starting point for building the shopping list automation NO MEALIE integration<br>
+    SCANNER - Button actions.yaml<br>
+    SHOPPING LIST - Lookup scanned product and add to HA Shoppinglist.yaml<br>
+    SHOPPING LIST - Mark all items on HA Shopping list complete and delete.yaml<br>
+    SHOPPING LIST - Update sensor for dashboards if shoppinglist changes.yaml<br>
+    SHOPPINGLIST - Enable product update if item updated.yaml<br>
+    SHOPPINGLIST - Print formatted HA shoppinglist.yaml<br>
+    SHOPPINGLIST - Save manually added product to cache.yaml<br>
+- **ha_automation - MEALIE Shopping list** sample automations to use as a starting point for building the shopping list automation MEALIE integration<br>
+    SHOPPINGLIST - Lookup scanned product and add to MEALIE Shoppinglist.yaml<br>
+    SHOPPINGLIST - Print formatted MEALIE shoppinglist.yaml<br>
+- **ha_dashboards - HA Shopping list** sample dashboa5ds to use as starting point for building own dashboards<br>
+    SHOPPINGLIST - Dashboard.yaml --> Dashboard showing a a custom view of the HA shopping list including buttons for various functions and a card to update unknown product details<br>
+    SHOPPINGLIST- Update Dashboard.yaml --> Dashboard to modify individual items on the HA shopping list<br>
+- **hardware documentation** product information and manuals for the various components that were used.<br>
+- **pyscript** the pyscripts currently in use<br>
 - **input-sources** misc information used during the build<br>
-
+- **README.md** this file
 # ToDo<br>
 - Establish 2-way communication with the printer to enable "paper out" messages.
 - Implement an easy way to clear the shopping list
