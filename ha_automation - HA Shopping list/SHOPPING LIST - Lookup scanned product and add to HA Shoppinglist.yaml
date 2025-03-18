@@ -86,8 +86,10 @@ actions:
                 if:
                   - condition: template
                     value_template: >-
-                      {{ ShoppingListItem in state_attr('sensor.shoppinglist',
-                      'list') | map(attribute='name') | list }}
+                      {{ ShoppingListItem in
+                      state_attr('sensor.shoppinglist','list') |
+                      selectattr('complete', 'equalto', false) |
+                      map(attribute='name') | list }}
                 then:
                   - action: notify.alexa_media_office
                     metadata: {}
