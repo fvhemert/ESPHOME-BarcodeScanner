@@ -1,0 +1,185 @@
+alias: SHOPPINGLIST - Lookup scanned product and add to MEALIE Shoppinglist
+description: >-
+  WHen a barcode is read, a HA event is fired by the ESPHome barcode scanner, 
+  passing the barcode to the python script to lookup the product and if its
+  found adding the product to a HA to-do list. It also posts back the product to
+  the ESPHome device for display on a screen.
+triggers:
+  - trigger: event
+    event_type: esphome.scanner01_scan
+    id: Product Barcode
+  - trigger: event
+    event_type: esphome.scanner01_generic
+    id: Generic Barcode
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - Product Barcode
+        sequence:
+          - action: pyscript.barcode_lookup
+            metadata: {}
+            data:
+              barcode: "{{ trigger.event.data.barcode }}"
+            response_variable: product
+            enabled: true
+          - action: esphome.scanner_01_product_identified
+            metadata: {}
+            data:
+              product: >-
+                {% if product.result == 'success' %}{% if product.brand | length
+                >0     %}{{product.brand}} {% endif %}{{product.title}} {% else
+                %}Onbekend product{% endif %}
+          - action: input_number.set_value
+            metadata: {}
+            data:
+              value: "{{ trigger.event.data.barcode }}"
+            target:
+              entity_id: input_number.barcode_product_update_barcode
+          - alias: If the barcode was found
+            if:
+              - condition: template
+                value_template: "{% if product.result == \"success\" %}true{% endif %}"
+            then:
+              - action: todo.add_item
+                metadata: {}
+                data:
+                  item: >-
+                    {% if product.result == 'success' %}{% if product.quantity |
+                    length >0  %}{{product.quantity}} {% endif %}{% if
+                    product.brand | length >0 %}{{product.brand}} {% endif
+                    %}{{product.title}}{% endif %}
+                target:
+                  entity_id:
+                    - todo.mealie_boodschappen
+              - action: input_text.set_value
+                metadata: {}
+                data:
+                  value: "{{ product.brand }}"
+                target:
+                  entity_id: input_text.barcode_product_update_brand
+              - action: input_text.set_value
+                metadata: {}
+                data:
+                  value: "{{ product.title }}"
+                target:
+                  entity_id: input_text.barcode_product_update_title
+              - action: input_text.set_value
+                metadata: {}
+                data:
+                  value: "{{ product.type }}"
+                target:
+                  entity_id: input_text.barcode_product_update_type
+              - action: input_text.set_value
+                metadata: {}
+                data:
+                  value: "{{ product.quantity }}"
+                target:
+                  entity_id: input_text.barcode_product_update_qty
+              - action: input_boolean.turn_off
+                metadata: {}
+                data: {}
+                target:
+                  entity_id:
+                    - input_boolean.barcode_product_update_enable_update_button
+              - action: notify.mobile_app_fvh_15_pro_max
+                data:
+                  message: |
+                    Nieuw item toegevoegd:
+                    {{ product.brand }} - {{ product.title }}
+                  title: Boodschappenlijst update
+                  data:
+                    actions:
+                      - action: URI
+                        title: Boodschappenlijst
+                        url: /dashboard-barcode/Boodschappenlijst
+              - action: notify.alexa_media_office
+                metadata: {}
+                data:
+                  message: |
+                    {{ product.brand }}  {{ product.title }} is toegevoegd
+                  data:
+                    type: announce
+            enabled: true
+            else:
+              - action: input_text.set_value
+                metadata: {}
+                data:
+                  value: Product merk
+                target:
+                  entity_id:
+                    - input_text.barcode_product_update_brand
+              - action: input_text.set_value
+                metadata: {}
+                data:
+                  value: Product naam
+                target:
+                  entity_id:
+                    - input_text.barcode_product_update_title
+              - action: input_text.set_value
+                metadata: {}
+                data:
+                  value: Type product
+                target:
+                  entity_id:
+                    - input_text.barcode_product_update_type
+              - action: input_text.set_value
+                metadata: {}
+                data:
+                  value: Items per pak
+                target:
+                  entity_id:
+                    - input_text.barcode_product_update_qty
+              - action: input_boolean.turn_on
+                metadata: {}
+                data: {}
+                target:
+                  entity_id:
+                    - input_boolean.barcode_product_update_enable_update_button
+              - action: notify.mobile_app_fvh_xs_max
+                data:
+                  message: |
+                    Onbekend artikel gescand!
+                    {{ trigger.event.data.barcode }}
+                  title: Boodschappenlijst update
+                  data:
+                    actions:
+                      - action: URI
+                        title: Product toevoegen
+                        url: /dashboard-barcode/ProductToevoegen
+      - conditions:
+          - condition: trigger
+            id:
+              - Generic Barcode
+        sequence:
+          - action: esphome.scanner_01_product_identified
+            metadata: {}
+            data:
+              product: "{{ trigger.event.data.product }}"
+          - action: todo.add_item
+            metadata: {}
+            data:
+              item: "{{ trigger.event.data.product }}"
+            target:
+              entity_id: todo.mealie_boodschappen
+          - action: notify.mobile_app_fvh_15_pro_max
+            data:
+              message: |
+                Nieuw item toegevoegd:
+                {{ trigger.event.data.product }}
+              title: Boodschappenlijst update
+              data:
+                actions:
+                  - action: URI
+                    title: Boodschappenlijst
+                    url: /dashboard-barcode/Boodschappenlijst
+          - action: notify.alexa_media_office
+            metadata: {}
+            data:
+              message: |
+                {{ trigger.event.data.product }} is toegevoegd
+              data:
+                type: announce
+mode: single

@@ -1,0 +1,20 @@
+alias: SHOPPINGLIST - Save manually added product to cache
+description: ""
+triggers: []
+conditions: []
+actions:
+  - action: pyscript.barcode_cache_add
+    metadata: {}
+    data:
+      barcode: "{{ states('input_number.barcode_product_update_barcode') | int }}"
+      brand: "{{ states('input_text.barcode_product_update_brand') }}"
+      title: "{{ states('input_text.barcode_product_update_title') }}"
+      type: "{{ states('input_text.barcode_product_update_type') }}"
+      quantity: "{{ states('input_text.barcode_product_update_qty') }}"
+    response_variable: Response
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.barcode_product_update_enable_update_button
+mode: single

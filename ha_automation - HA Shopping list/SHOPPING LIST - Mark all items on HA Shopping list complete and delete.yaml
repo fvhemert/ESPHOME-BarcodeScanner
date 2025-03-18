@@ -1,0 +1,37 @@
+alias: SHOPPING LIST - Mark all items on HA Shopping list complete and delete
+description: ""
+triggers: []
+conditions: []
+actions:
+  - action: shopping_list.complete_all
+    metadata: {}
+    data: {}
+  - action: shopping_list.clear_completed_items
+    metadata: {}
+    data: {}
+  - action: homeassistant.update_entity
+    metadata: {}
+    data:
+      entity_id:
+        - sensor.shoppinglist
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.barcode_product_update_enable_update_button
+  - action: input_text.set_value
+    metadata: {}
+    data:
+      value: "-"
+    target:
+      entity_id:
+        - input_text.barcode_product_update_type
+        - input_text.barcode_product_update_brand
+        - input_text.barcode_product_update_qty
+        - input_text.barcode_product_update_title
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.barcode_product_update_enable_update_button
+mode: single

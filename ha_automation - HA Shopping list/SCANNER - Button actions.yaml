@@ -1,0 +1,76 @@
+alias: SCANNER - Button actions
+description: ""
+triggers:
+  - trigger: state
+    entity_id:
+      - binary_sensor.left_button
+    from: "off"
+    id: Left button pushed
+    to: "on"
+  - trigger: state
+    entity_id:
+      - binary_sensor.right_button
+    from: "off"
+    id: Right button pushed
+    to: "on"
+  - trigger: state
+    entity_id:
+      - switch.scanning_enabled
+    from: "off"
+    to: "on"
+    id: Scanning enabled
+  - trigger: state
+    entity_id:
+      - switch.scanning_enabled
+    from: "on"
+    to: "off"
+    id: Scanning disabled
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - Left button pushed
+        sequence:
+          - action: switch.toggle
+            metadata: {}
+            data: {}
+            target:
+              entity_id:
+                - switch.scanning_enabled
+      - conditions:
+          - condition: trigger
+            id:
+              - Scanning enabled
+        sequence:
+          - action: light.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id:
+                - light.left_led
+      - conditions:
+          - condition: trigger
+            id:
+              - Scanning disabled
+        sequence:
+          - action: light.turn_off
+            metadata: {}
+            data: {}
+            target:
+              entity_id:
+                - light.left_led
+      - conditions:
+          - condition: trigger
+            id:
+              - Right button pushed
+        sequence:
+          - action: automation.trigger
+            metadata: {}
+            data:
+              skip_condition: true
+            target:
+              entity_id:
+                - automation.shoppinglist_print_formatted_ha_shoppinglist
+mode: single

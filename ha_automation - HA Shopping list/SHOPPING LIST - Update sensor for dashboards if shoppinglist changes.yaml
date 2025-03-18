@@ -1,0 +1,14 @@
+alias: SHOPPING LIST - Update sensor for dashboards if shoppinglist changes
+description: ""
+triggers:
+  - trigger: state
+    entity_id:
+      - todo.shopping_list
+conditions: []
+actions:
+  - action: homeassistant.update_entity
+    metadata: {}
+    data:
+      entity_id:
+        - sensor.shoppinglist
+mode: single

@@ -1,0 +1,17 @@
+alias: SHOPPINGLIST - Enable product update if item updated
+description: ""
+triggers:
+  - trigger: state
+    entity_id:
+      - input_text.barcode_product_update_title
+      - input_text.barcode_product_update_brand
+      - input_text.barcode_product_update_type
+      - input_text.barcode_product_update_qty
+conditions: []
+actions:
+  - action: input_boolean.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.barcode_product_update_enable_update_button
+mode: single

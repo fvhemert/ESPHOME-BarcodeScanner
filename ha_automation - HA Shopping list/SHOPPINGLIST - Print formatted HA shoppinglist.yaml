@@ -1,0 +1,49 @@
+alias: SHOPPINGLIST - Print formatted HA shoppinglist
+description: ""
+triggers: []
+conditions: []
+actions:
+  - action: todo.get_items
+    metadata: {}
+    data:
+      status: needs_action
+    target:
+      entity_id: todo.shopping_list
+    response_variable: mylist
+  - action: esphome.scanner_01_write
+    data:
+      command: "\e\x0EBoodschappen\e\x14\n"
+  - action: esphome.scanner_01_write
+    data:
+      command: "\r\n"
+  - repeat:
+      for_each: "{{ mylist['todo.shopping_list']['items'] }}"
+      sequence:
+        - action: esphome.scanner_01_write
+          metadata: {}
+          data:
+            command: >
+              {% set text = repeat.item.summary %} {% set page_width = 32 %} {%
+              set words = text.split(' ') %} {% set ns = namespace(cl = "- ", fl
+              = []) %} {% for word in words %} {% if ns.cl|length + word|length
+              + 1 <= page_width %}
+                  {% set ns.cl = ns.cl + word + " " %} 
+                {% else %}
+                  {% set ns.fl = ns.fl + [ns.cl.rstrip()] %}
+                  {% set ns.cl = "  " + word + " " %}
+                {% endif %}
+              {% endfor %} {% set ns.fl = ns.fl + [ns.cl.rstrip()] %}
+              {{ns.fl|join('\r\n') }}
+        - action: esphome.scanner_01_write
+          data:
+            command: "\r\n"
+  - action: esphome.scanner_01_write
+    data:
+      command: "\r\n"
+  - action: esphome.scanner_01_write
+    data:
+      command: "\r\n"
+  - action: esphome.scanner_01_write
+    data:
+      command: "\r\n"
+mode: single

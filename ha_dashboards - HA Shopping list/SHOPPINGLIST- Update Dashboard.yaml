@@ -1,0 +1,45 @@
+type: sections
+max_columns: 1
+title: Aanpassen boodschappenlijst
+path: modify-shoppinglist
+subview: true
+sections:
+  - type: grid
+    cards:
+      - type: heading
+        heading: Boodschappenlijst
+        heading_style: title
+      - type: todo-list
+        entity: todo.shopping_list
+      - type: custom:button-card
+        name: Boodschappenlijst leeg maken
+        icon: mdi:basket-check
+        tap_action:
+          action: call-service
+          service: automation.trigger
+          service_data:
+            entity_id: automation.shopping_list_mark_all_items_as_complete_and_delete
+        styles:
+          card:
+            - background-color: rgba(0, 0, 0, 0)
+            - border: 1px solid white
+            - border-radius: 10px
+            - padding: 10px 0px
+          grid:
+            - grid-template-areas: "\"i n s\""
+            - grid-template-columns: 75px auto auto
+          img_cell:
+            - justify-content: start
+            - align-items: start
+          icon:
+            - justify-self: start
+            - width: 45px
+            - padding: 0px 0px
+            - padding-left: 10px
+          name:
+            - padding: 0px 1px
+            - justify-self: left
+            - padding left: 5px
+cards: []
+theme: Van-Hemert-Theme
+icon: mdi:basket-unfill

@@ -1,0 +1,40 @@
+  # Published service to support formatted printing
+    - service: send_formatted_text
+      variables:
+        command: string
+      then:
+        - lambda: |-
+            std::string input_text = command;
+            int max_width = 32;  // Get the paper width
+            std::string current_line = "-";  // Start each line with '-'
+            std::vector<std::string> words;
+            size_t pos = 0;
+
+            // Split the input text into words
+            while ((pos = input_text.find(' ')) != std::string::npos) {
+              words.push_back(input_text.substr(0, pos));
+              input_text.erase(0, pos + 1);
+            }
+            words.push_back(input_text);  // Add the last word
+
+            for (const auto &word : words) {
+              if (current_line.length() + word.length() + 1 > max_width) {
+                // Send the current line to the printer
+                id(printer).write_str((current_line + "\n").c_str());
+                // Start a new line with the same indentation as '-'
+                current_line = " " + word;
+              } else {
+                // Add the word to the current line
+                if (current_line == "-") {
+                  current_line += word;
+                } else {
+                  current_line += " " + word;
+                }
+              }
+            }
+
+            // Send the last line
+            if (!current_line.empty()) {
+              id(printer).write_str((current_line + "\n").c_str());
+            }
+

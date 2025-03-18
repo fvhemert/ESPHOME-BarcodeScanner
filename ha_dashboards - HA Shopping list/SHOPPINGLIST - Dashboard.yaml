@@ -1,0 +1,172 @@
+type: sections
+max_columns: 2
+title: Boodschappen
+path: boodschappen
+icon: mdi:cart-arrow-down
+sections:
+  - type: grid
+    cards:
+      - type: heading
+        heading_style: title
+        heading: Boodschappenlijst
+      - type: markdown
+        content: |-
+          {% set shopping_list = state_attr('sensor.shoppinglist', 'list') %}
+          {% for item in shopping_list if not item.complete %}- {{ item.name }}
+          {% endfor %}
+      - type: custom:button-card
+        name: Boodschappenlijst leeg maken
+        icon: mdi:basket-check
+        tap_action:
+          action: call-service
+          service: automation.trigger
+          service_data:
+            entity_id: automation.shopping_list_mark_all_items_as_complete_and_delete
+        styles:
+          card:
+            - background-color: rgba(0, 0, 0, 0)
+            - border: 1px solid white
+            - border-radius: 10px
+            - padding: 10px 0px
+          grid:
+            - grid-template-areas: "\"i n s\""
+            - grid-template-columns: 75px auto auto
+          img_cell:
+            - justify-content: start
+            - align-items: start
+          icon:
+            - justify-self: start
+            - width: 45px
+            - padding: 0px 0px
+            - padding-left: 10px
+          name:
+            - padding: 0px 1px
+            - justify-self: left
+            - padding left: 5px
+      - type: custom:button-card
+        name: Boodschappenlijst aanpassen
+        icon: mdi:basket-unfill
+        tap_action:
+          action: navigate
+          navigation_path: /dashboard-touchscreens/modify-shoppinglist
+        styles:
+          card:
+            - background-color: rgba(0, 0, 0, 0)
+            - border: 1px solid white
+            - border-radius: 10px
+            - padding: 10px 0px
+          grid:
+            - grid-template-areas: "\"i n s\""
+            - grid-template-columns: 75px auto auto
+          img_cell:
+            - justify-content: start
+            - align-items: start
+          icon:
+            - justify-self: start
+            - width: 45px
+            - padding: 0px 0px
+            - padding-left: 10px
+          name:
+            - padding: 0px 1px
+            - justify-self: left
+            - padding left: 5px
+      - type: custom:button-card
+        name: Boodschappenlijst afdrukken
+        icon: mdi:printer-pos
+        tap_action:
+          action: call-service
+          service: automation.trigger
+          service_data:
+            entity_id: automation.shoppinglist_print_formatted_ha_shoppinglist
+        styles:
+          card:
+            - background-color: rgba(0, 0, 0, 0)
+            - border: 1px solid white
+            - border-radius: 10px
+            - padding: 10px 0px
+          grid:
+            - grid-template-areas: "\"i n s\""
+            - grid-template-columns: 75px auto auto
+          img_cell:
+            - justify-content: start
+            - align-items: start
+          icon:
+            - justify-self: start
+            - width: 45px
+            - padding: 0px 0px
+            - padding-left: 10px
+          name:
+            - padding: 0px 1px
+            - justify-self: left
+            - padding left: 5px
+  - type: grid
+    cards:
+      - type: heading
+        heading_style: title
+        heading: Product update
+      - type: markdown
+        content: >-
+          **Vul de ontbrekende product gegevens in**
+
+          *Barcode: {{ states('input_number.barcode_product_update_barcode')
+          |int }}*
+        visibility:
+          - condition: state
+            entity: input_boolean.barcode_product_update_enable_update_button
+            state: "on"
+      - type: markdown
+        content: >-
+          **Laatst gescand product**
+
+          *Barcode: {{ states('input_number.barcode_product_update_barcode')
+          |int }}*
+        visibility:
+          - condition: state
+            entity: input_boolean.barcode_product_update_enable_update_button
+            state: "off"
+      - type: entities
+        entities:
+          - entity: input_text.barcode_product_update_title
+            name: Productnaam
+          - entity: input_text.barcode_product_update_brand
+            name: Merk
+          - entity: input_text.barcode_product_update_type
+            name: Type
+          - entity: input_text.barcode_product_update_qty
+            name: Qty.
+      - type: custom:button-card
+        name: Product toevoegen of updaten
+        icon: mdi:barcode-scan
+        tap_action:
+          action: call-service
+          service: automation.trigger
+          service_data:
+            entity_id: automation.shoppinglist_save_manually_added_product_to_cache
+        styles:
+          card:
+            - background-color: rgba(0, 0, 0, 0)
+            - border: 1px solid white
+            - border-radius: 10px
+            - padding: 10px 0px
+          grid:
+            - grid-template-areas: "\"i n s\""
+            - grid-template-columns: 75px auto auto
+          img_cell:
+            - justify-content: start
+            - align-items: start
+          icon:
+            - justify-self: start
+            - width: 45px
+            - padding: 0px 0px
+            - padding-left: 10px
+          name:
+            - padding: 0px 1px
+            - justify-self: left
+            - padding left: 5px
+        visibility:
+          - condition: state
+            entity: input_boolean.barcode_product_update_enable_update_button
+            state: "on"
+    column_span: 1
+theme: Van-Hemert-Theme
+cards: []
