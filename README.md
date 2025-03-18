@@ -1,4 +1,5 @@
 # ESPHOME-BarcodeScanner
+<img src="https://github.com/user-attachments/assets/7599e981-eb70-4ef0-9e64-8ed92874b929" width=50% height=50%><br>
 
 **Introduction**<br>
 Triggered by the youtube videos from _Matt Fryer_ and _SmartHome Yourself_ I decided to start looking into creating an automated shoppinglist in Home Assistant.
@@ -6,20 +7,24 @@ The initial setup as described here is intended to learn, further define the req
 
 The first iteration of this project will support the following scenario:
 - Before a consumed product is discarded, its barcode is scanned on by a scanner that is located on the kitchen counter
-- After scanning the barcode an attempt is made to automatically resolve the code to a product name
-- If the product name is successfully resolved, the product is automatically added to the shopping list
-- If the product name cannot be resolved, the user will receive a notification on his/her mobile phone, the notification inlcudes a button that opens up a webpage to manually add the product information.
-- The manually updated product information will be stored for future use and the product will be added to the shopping list.
+- After scanning the barcode, an attempt is made to automatically resolve the code to a product name
+- If the product name is successfully resolved, the product is automatically added to the shopping list and the product information is locally cached
+- If the product name cannot be resolved, the user will receive a notification on his/her mobile phone, this notification will include a button that opens up a webpage to manually add the product information.
+- The manually updated product information will be stored in the local cache for future use and the product will be added to the shopping list.
+- If the product is already on the shopping list, it will not be added a second time.
 - If it is time to go to the store, pushing a button on top of the scanner will trigger the printout of a nicely formatted shoppinglist containg all previously added products.
+- All important interaction with the barcode scanner will be confirmed by using TTS and the kitchen SONOS mediaplayer.
 
-The shopping list synchronizes with MEALIE, a locally installed recipe manager and meal planner.
+**Note:**<br>
+The orginal project leveraged the MEALIE integration to synchronize with MEALIE, a locally installed recipe manager and meal planner, I have decided to abandon this additional integration and only use the native Home Assistant Shopping list integration (https://www.home-assistant.io/integrations/shopping_list/)
+In case of scanning a product that is already on the shopping list, the MEALIE integration will modify the shopping list entry by adding a number prefix or increasing the allready existing one. This functionality will no longer be availble and has been replaced by logic that will eliminate adding duplicate entries, this logic at this time does not include the number prefix.
 
 **Highlevel overview**<br>
 The illustration below depicts the highlevel implementation of the Barcode Scanner implmentation
-![image](https://github.com/user-attachments/assets/8a0614ef-5037-4cc1-a282-e38d920bc123)
+![image](https://github.com/user-attachments/assets/3128395e-f256-4172-bc37-2f82b9d9ae85)
 
-# Components
 
+# Components<br>
 **_GM67 Barcode scanner module_**<br>
 <img src="https://github.com/user-attachments/assets/bf544f15-44c3-4601-a529-7d63a8ee7e7b" width=10% height=10%><br>
 Barcode scanner module that supports a wide variety of barcode types and can be connceted to an ESP device through a TTL serial connection.
@@ -62,30 +67,22 @@ The shopping list and product update page is also available on the various touch
 The thermal printer requires a stable 5V power supply rated at 3A, testing with various external 3A adapters showed that they are not supplying enough power to operate the printer. This is why a Meanwell powersupply is used.
 
 **_3D printed enclosure_**<br>
-Two enclosurea designed in Fusion360 to accomodate the Barcode scanner.
-The first enclosure uses the GM60 scanner, the OLED display and an external powersupply, the second enclosure is build around the GM67 scanner module and also includes a thermal printer and powersupply.
+Two enclosures designed in Fusion360 to accomodate the Barcode scanner.
+The first enclosure (light grey) uses the GM60 scanner, the OLED display and an external powersupply, the second enclosure (black) is build around the GM67 scanner module and also includes a thermal printer and powersupply.
 
 **_Home Assistant_**<br>
 Home Assistant is the core orchestrator of the Shoppinglist automation, it uses the following (custom) integrations:
 
 1. ESPHOME - to create a YAML configuration file and install directly onto the ESP8266. https://esphome.io/
-2. ALEXA MEDIA PLAYER - to create Text to Speech notifications. https://github.com/alandtse/alexa_media_player/wiki 
+2. SONOS - to play the Text to Speech notifications. https://www.home-assistant.io/integrations/sonos
 3. FULLY KIOSK BROWSER - Show shoppinglist dashboards on wall mounted tablets. https://www.home-assistant.io/integrations/fully_kiosk
-4. MEALIE - SHopping list integration. https://www.home-assistant.io/integrations/mealie
-5. PYSCRIPT - integration to use Python functions and scripts in homeassistant https://github.com/custom-components/pyscript
-6. SHOPPING LIST - keep track of shopping list items in Home Assistant https://www.home-assistant.io/integrations/shopping_list
-
-**_Mealie_**<br>
-A self-hosted recipe manager and meal planner with a RestAPI backend and a reactive frontend application built in Vue for a pleasant user experience for the whole family. 
-For more information refer to: https://docs.mealie.io/
-
+4. PYSCRIPT - integration to use Python functions and scripts in homeassistant https://github.com/custom-components/pyscript
+5. SHOPPING LIST - keep track of shopping list items in Home Assistant https://www.home-assistant.io/integrations/shopping_list
 
 # High level installation steps<br>
 1. **Python scripts:** the scripts provided by Matt Fryer are installed "as-is" following the guidance provided on his GitHub page. A copy of the Python scripts can be found in the **pyscript** folder in this repository. Make sure to also install the Python custom integration in Home Assistant.
 2. **ESP8266:** the **esphome** folder in this repository contains the modified/updated yaml file that was originally created by Matt Fryer. Install it using the ESPHOME plaform.
 3. **Home Assistant:** use the yaml code provided in the **ha_automation** folder to build your HA automations. Update the entity names to match your installation.
-4. **Mealie:** Install Mealie on a dedicated server (eg. RaspberryPI) or DOcker container as described on the Mealie website. Once the Mealie application is running, install the Home Assistant Mealie integration.
-
 
 # Repository content<br>
 - **ESPHome**  Updated yaml file for the ESP8266 device. (SCANNER-01 uses the GM60 scanner, SCANNER-02 supports the GM67 scanner and thermal printer)<br>
