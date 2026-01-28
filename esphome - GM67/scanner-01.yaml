@@ -52,8 +52,7 @@ logger:
 # Enable Home Assistant API
 api:
   encryption:
-      key: "Qa/VgI8wP3/db8OyRfHxY2eK7wdQ5ysB/sjzI2WShJE="
-      #key: "9Ab5b3kw01TmGtPm762Iw2e3wqfaSdx7qa31awDUm7Y="
+      key: !secret api_key
   actions:
     
     # Published service to support printing
