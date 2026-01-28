@@ -48,7 +48,7 @@ logger:
 # Enable Home Assistant API
 api:
   encryption:
-      key: "Qa/VgI8wP3/db8OyRfHxY2eK7wdQ5ysB/sjzI2WShJE="
+      key: !secret api_key
   actions:
     # For now, when a product is identified it just logs it to the debug stream but this can be adapted to write to product to a screen
     - action: product_identified
